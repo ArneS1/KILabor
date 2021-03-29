@@ -45,7 +45,7 @@ public class Game {
 
   public Game copy(){
     Game gameCopy = new Game();
-    undoLastTurn();
+    gameCopy.turns.clear();
 
     turns.forEach(turn -> gameCopy.turns.add(turn.copy()));
 
@@ -54,14 +54,14 @@ public class Game {
 
   public boolean takeTurn(Placement placement){
     if(!debug){
-      if(turns.size() == 1 && placement.getBuilding().getId() != 23){
+      if(turns.size() == 1 && placement.getBuilding().getId() != 23){   // Check for Cathedral
         return false;
       }
-      if(placement.getBuilding().getColor() != Color.Blue){
-        if(turns.size()%2 == 0 && placement.getBuilding().getColor() != Color.Black){
+      if(placement.getBuilding().getColor() != Color.Blue){       // Check Whos turn it is
+        if(turns.size()%2 == 0 && placement.getBuilding().getColor() != Color.Black){ //Blacks turn
           return false;
         }
-        if(turns.size()%2 == 1 && placement.getBuilding().getColor() != Color.White){
+        if(turns.size()%2 == 1 && placement.getBuilding().getColor() != Color.White){ //Whites turn
           return false;
         }
       }
@@ -82,7 +82,9 @@ public class Game {
   }
 
   public void undoLastTurn() {
-    turns.remove(turns.size() - 1);
+    if(turns.size() > 1){
+      turns.remove(turns.size() - 1);
+    }
   }
 
   public void forfeitTurn(){

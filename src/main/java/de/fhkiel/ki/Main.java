@@ -12,7 +12,7 @@ public class Main {
 
     long startTime = System.currentTimeMillis();
     long counter = 0, fails = 0;
-    while(System.currentTimeMillis() - startTime < 5000){
+    while(System.currentTimeMillis() - startTime < 50000){
       ++counter;
       if(testGame.takeTurn(ai.takeTurn(testGame))){
         System.out.println(testGame.lastTurn());
