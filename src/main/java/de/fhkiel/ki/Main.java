@@ -6,7 +6,8 @@ public class Main {
 
   public static void main(String[] args) {
     Game testGame = new Game();
-    CoolAI ai = new CoolAI();
+    CoolAI ai_one = new CoolAI();
+    CoolAI ai_two = new CoolAI();
 
     System.out.println(testGame.lastTurn());
 
@@ -14,15 +15,23 @@ public class Main {
     long counter = 0, fails = 0;
     while(System.currentTimeMillis() - startTime < 50000){
       ++counter;
-      if(testGame.takeTurn(ai.takeTurn(testGame))){
-        System.out.println(testGame.lastTurn());
+
+      if(testGame.copy().isFirstPlayerTurn()){
+        aiTurn(testGame, ai_one);
       } else {
-        ++fails;
+        aiTurn(testGame, ai_two);
       }
+
     }
 
     System.out.println("Score: " + testGame.score() + "\n");
     System.out.println(counter + " tries with " + fails + " unusable turns");
     System.out.println("Leftover buildings " +testGame.getPlacableBuildings());
+  }
+
+  private static void aiTurn(Game game, CoolAI coolAI){
+    if(game.takeTurn(coolAI.takeTurn(game))){
+      System.out.println(game.lastTurn());
+    }
   }
 }

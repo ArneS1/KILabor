@@ -9,10 +9,21 @@ import java.util.stream.Collectors;
 
 public class CoolAI {
 
+  private List<Placement> possibleTurns;
+
+  public CoolAI(){
+    possibleTurns = new ArrayList<>();
+  }
+
   public Placement takeTurn(Game game) {
-    Random rand = new Random();
-    List<Placement> placements = getTurns(game);
-    if(placements.isEmpty()){
+    if(possibleTurns.isEmpty() || possibleTurns.get(0).getBuilding().getId()==23){
+      possibleTurns = getPossibleTurns(game);
+    }
+    if(!possibleTurns.isEmpty()){
+      removeImpossibleTurns(game);
+    }
+
+    if(possibleTurns.isEmpty()){
       //Kein zug mehr möglich.
       System.out.println(game.lastTurn());
       System.out.println(game.getCurrentPlayer() + " hat keinen möglichen Zug gefunden und das Spiel beendet!");
@@ -21,46 +32,60 @@ public class CoolAI {
 
       System.exit(0);
     }
-    return placements.get(rand.nextInt(placements.size()));
+
+    return getTurn();
   }
 
-  List<Placement> getTurns(Game game){
-    List<Placement> allPlacements = new ArrayList<>();
-
+  Placement getTurn(){
     Random rand = new Random();
+    return possibleTurns.get(rand.nextInt(possibleTurns.size()));
+  }
 
-    List<Building> buildings = game.getPlacableBuildings().stream()
-            .filter(building -> building.getColor() == game.getCurrentPlayer())
-            .collect(Collectors.toList());
+  private void removeImpossibleTurns(Game game){
+    List<Placement> deleteTurns = new ArrayList<>();
+    for (Placement turn: possibleTurns) {
+      if(!game.copy().takeTurn(turn)){
+        deleteTurns.add(turn);
+      }
+    }
+    possibleTurns.removeAll(deleteTurns);
+  }
 
-    for(int x = 0; x < 10; ++x){
-      for(int y = 0; y <10; ++y){
-        for(Building building: buildings){
-          List<Placement> testPlacements = new ArrayList<>();
+  List<Placement> getPossibleTurns(Game game){
+      List<Placement> allPlacements = new ArrayList<>();
 
-          testPlacements.add(new Placement(x, y, Direction._0, building));
+      List<Building> buildings = game.getPlacableBuildings().stream()
+              .filter(building -> building.getColor() == game.getCurrentPlayer())
+              .collect(Collectors.toList());
 
-          if(building.getTurnable() == Turnable.Half){
-            testPlacements.add(new Placement(x, y, Direction._90, building));
-          }
+      for(int x = 0; x < 10; ++x){
+        for(int y = 0; y <10; ++y){
+          for(Building building: buildings){
+            List<Placement> testPlacements = new ArrayList<>();
 
-          if(building.getTurnable() == Turnable.Full){
-            testPlacements.add(new Placement(x, y, Direction._180, building));
-            testPlacements.add(new Placement(x, y, Direction._270, building));
-            testPlacements.add(new Placement(x, y, Direction._90, building));
-          }
+            testPlacements.add(new Placement(x, y, Direction._0, building));
 
-          for (Placement testPlacement: testPlacements) {
-            if(game.copy().takeTurn(testPlacement)){
-              allPlacements.add(testPlacement);
+            if(building.getTurnable() == Turnable.Half){
+              testPlacements.add(new Placement(x, y, Direction._90, building));
+            }
+
+            if(building.getTurnable() == Turnable.Full){
+              testPlacements.add(new Placement(x, y, Direction._180, building));
+              testPlacements.add(new Placement(x, y, Direction._270, building));
+              testPlacements.add(new Placement(x, y, Direction._90, building));
+            }
+
+            for (Placement testPlacement: testPlacements) {
+              if(game.copy().takeTurn(testPlacement)){
+                allPlacements.add(testPlacement);
+              }
             }
           }
         }
       }
-    }
 
-    System.out.println("Mögliche Züge: " + allPlacements.size());
+      System.out.println("Mögliche Züge: " + allPlacements.size());
 
-    return allPlacements;
+      return allPlacements;
   }
 }
