@@ -43,6 +43,16 @@ public class CoolAI {
     }
 
     Placement getTurn() {
+        /*
+        TODO: jeden possible Turn validieren & ranken
+        Kriterien:
+         - möglichst geringer abstand zu anderen eigenen buildings ohne unterbrechung
+         - möglichst viele Felder umschlossen
+         Zug sofort ausführen:
+         - gegnerisches Gebäude umschlossen
+
+         die ersten N züge nur versuchen eigene Häuser aneinanderzureihen.
+         */
         Random rand = new Random();
         return possibleTurns.get(rand.nextInt(possibleTurns.size()));
     }
