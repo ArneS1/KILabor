@@ -52,10 +52,6 @@ public class Game {
     return gameCopy;
   }
 
-  public boolean isFirstPlayerTurn(){
-    return turns.size()%2 == 1;
-  }
-
   public boolean takeTurn(Placement placement){
     if(!debug){
       if(turns.size() == 1 && placement.getBuilding().getId() != 23){   // Check for Cathedral

@@ -13,12 +13,18 @@ public class Main {
 
     long startTime = System.currentTimeMillis();
     long counter = 0, fails = 0;
+    boolean playerOneTurn = true;
+
     while(System.currentTimeMillis() - startTime < 50000){
       ++counter;
 
-      if(testGame.copy().isFirstPlayerTurn()){
+      if(playerOneTurn){
+        playerOneTurn = false;
+        System.out.println("Zug von ONE");
         aiTurn(testGame, ai_one);
       } else {
+        playerOneTurn = true;
+        System.out.println("Zug von TWO");
         aiTurn(testGame, ai_two);
       }
 
@@ -30,8 +36,10 @@ public class Main {
   }
 
   private static void aiTurn(Game game, CoolAI coolAI){
-    if(game.takeTurn(coolAI.takeTurn(game))){
-      System.out.println(game.lastTurn());
-    }
+    try{
+      if(game.takeTurn(coolAI.takeTurn(game))){
+        System.out.println(game.lastTurn().getBoard());
+      }
+    } catch (Exception ignored){}
   }
 }
