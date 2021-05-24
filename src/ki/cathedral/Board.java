@@ -1,16 +1,6 @@
-package de.fhkiel.ki.cathedral;
+package ki.cathedral;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.Stack;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Board {
@@ -28,6 +18,10 @@ public class Board {
         board[y][x] = Color.None;
       }
     }
+  }
+
+  public Color[][] getBoardAsColorArray(){
+    return board.clone();
   }
 
   public Board copy(){

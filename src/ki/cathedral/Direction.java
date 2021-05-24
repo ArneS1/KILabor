@@ -1,13 +1,14 @@
-package de.fhkiel.ki.cathedral;
+package ki.cathedral;
 
-public enum Turnable {
-  No(1),
-  Half(2),
-  Full(4);
+public enum Direction {
+  _0(0),
+  _90(1),
+  _180(2),
+  _270(3);
 
   private final int number;
 
-  Turnable(int number) {
+  Direction(int number) {
     this.number = number;
   }
 

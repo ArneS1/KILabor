@@ -1,10 +1,6 @@
-package de.fhkiel.ki.cathedral;
+package ki.cathedral;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Game {
@@ -58,10 +54,10 @@ public class Game {
         return false;
       }
       if(placement.getBuilding().getColor() != Color.Blue){       // Check Whos turn it is
-        if(turns.size()%2 == 0 && placement.getBuilding().getColor() != Color.Black){ //Blacks turn
+        if(turns.size()%2 == 0 && placement.getBuilding().getColor() != Color.Black){ //White turn
           return false;
         }
-        if(turns.size()%2 == 1 && placement.getBuilding().getColor() != Color.White){ //Whites turn
+        if(turns.size()%2 == 1 && placement.getBuilding().getColor() != Color.White){ //Blacks turn
           return false;
         }
       }

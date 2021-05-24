@@ -1,4 +1,4 @@
-package de.fhkiel.ki.cathedral;
+package ki.cathedral;
 
 import java.util.List;
 import java.util.Objects;

@@ -1,6 +1,4 @@
-package de.fhkiel.ki.cathedral;
-
-import java.util.StringJoiner;
+package ki.cathedral;
 
 public enum Color {
   None,

@@ -1,6 +1,6 @@
-package de.fhkiel.ki;
+package ki;
 
-import de.fhkiel.ki.cathedral.*;
+import ki.cathedral.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +17,8 @@ public class CoolAI {
     }
 
     public Placement takeTurn(Game game) {
-        if (possibleTurns.isEmpty() || possibleTurns.get(0).getBuilding().getId() == 23) {
-            possibleTurns = getPossibleTurns(game);
-        }
-        if (!possibleTurns.isEmpty()) {
-            removeImpossibleTurns(game);
-        }
+
+        possibleTurns = getPossibleTurns(game);
 
         //Falls kein Zug mehr möglich ist
         if (possibleTurns.isEmpty()) {
@@ -43,16 +39,6 @@ public class CoolAI {
     }
 
     Placement getTurn() {
-        /*
-        TODO: jeden possible Turn validieren & ranken
-        Kriterien:
-         - möglichst geringer abstand zu anderen eigenen buildings ohne unterbrechung
-         - möglichst viele Felder umschlossen
-         Zug sofort ausführen:
-         - gegnerisches Gebäude umschlossen
-
-         die ersten N züge nur versuchen eigene Häuser aneinanderzureihen.
-         */
         Random rand = new Random();
         return possibleTurns.get(rand.nextInt(possibleTurns.size()));
     }
@@ -67,7 +53,7 @@ public class CoolAI {
         possibleTurns.removeAll(deleteTurns);
     }
 
-    List<Placement> getPossibleTurns(Game game) {
+    public List<Placement> getPossibleTurns(Game game) {
         List<Placement> allPlacements = new ArrayList<>();
 
         List<Building> buildings = game.getPlacableBuildings().stream()

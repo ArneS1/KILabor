@@ -1,12 +1,6 @@
-package de.fhkiel.ki.cathedral;
+package ki.cathedral;
 
-import com.sun.javafx.collections.ImmutableObservableList;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Building {

@@ -1,6 +1,5 @@
-package de.fhkiel.ki.cathedral;
+package ki.cathedral;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.StringJoiner;
 

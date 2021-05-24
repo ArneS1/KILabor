@@ -1,7 +1,6 @@
-package de.fhkiel.ki.cathedral;
+package ki.cathedral;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 
 public class Position {
   private final int x;

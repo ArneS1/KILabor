@@ -1,10 +1,10 @@
-package de.fhkiel.ki;
+package ki;
 
-import de.fhkiel.ki.cathedral.Game;
+import ki.cathedral.Game;
 
-public class Main {
+public class GameMain {
 
-  public static void main(String[] args) {
+  public void play() {
     Game testGame = new Game();
     CoolAI ai_one = new CoolAI();
     CoolAI ai_two = new CoolAI();
