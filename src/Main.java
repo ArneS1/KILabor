@@ -12,8 +12,12 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import ki.CoolAI;
-import ki.cathedral.Color;
-import ki.cathedral.Game;
+import ki.cathedral.*;
+
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main extends Application implements Runnable {
 
@@ -21,6 +25,10 @@ public class Main extends Application implements Runnable {
     private Text scenetitle;
     private Text score;
     private Text possibleTurns;
+    private List<Button> buildingButtons = new ArrayList<>();
+    CoolAI ai_one;
+    CoolAI ai_two;
+    Boolean buttonsCreated = false;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -38,11 +46,12 @@ public class Main extends Application implements Runnable {
         gridPane.add(score, 0, 13, 2, 1);
 
         game = new Game();
-        CoolAI ai_one = new CoolAI();
-        CoolAI ai_two = new CoolAI();
+        ai_one = new CoolAI();
+        ai_two = new CoolAI();
 
         Button button_aiOne = new Button("AI ONE");
         Button button_aiTwo = new Button("AI TWO");
+
 
         button_aiOne.setOnMouseClicked(mouseEvent -> {
             aiTurn(game, ai_one);
@@ -73,7 +82,7 @@ public class Main extends Application implements Runnable {
 
 
         primaryStage.setTitle("Hello Eike");
-        primaryStage.setScene(new Scene(gridPane, 700, 700));
+        primaryStage.setScene(new Scene(gridPane, 1000, 700));
         primaryStage.show();
     }
 
@@ -108,9 +117,16 @@ public class Main extends Application implements Runnable {
                         y + 2);
             }
         }
+
+        if(!buttonsCreated){
+            createBuildingButtons(gridPane, ui);
+            buttonsCreated = true;
+        }
+
         score.setText(getCurrentScore(game));
         ui.show();
     }
+
 
     private String getCurrentScore(Game game) {
         String rScore;
@@ -151,6 +167,121 @@ public class Main extends Application implements Runnable {
         }
         return rect;
     }
+
+    private void createBuildingButtons(GridPane gridPane, Stage ui) {
+
+        int x = 12;
+        int y = 1;
+        for (Button btn : buildingButtons
+        ) {
+            gridPane.getChildren().remove(btn);
+        }
+
+        buildingButtons.clear();
+
+        for (Building building : game.getPlacableBuildings()
+        ) {
+            if(building.getColor() == game.getCurrentPlayer()){
+                Button btn = new Button(building.getName());
+                btn.setOnMouseClicked(mouseEvent -> {
+                  humanPlayerTurn(game.getCurrentPlayer(), building, gridPane, ui);
+                });
+                btn.setMinWidth(50);
+                gridPane.add(btn, x, y);
+                y++;
+                buildingButtons.add(btn);
+            }
+        }
+    }
+
+    private void humanPlayerTurn(Color player, Building building, GridPane gridPane, Stage ui){
+
+        final int[] x = {0};
+        final int[] y = {0};
+        final Direction[] direction = {Direction._0};
+
+        Button xpBtn = new Button("X++");
+        Text xText = new Text("X: " + x[0]);
+        Button xnBtn = new Button("X--");
+
+        Button ypBtn = new Button("Y++");
+        Text yText = new Text("Y: " + y[0]);
+        Button ynBtn = new Button("Y--");
+
+        Button rotateBtn = new Button("rotate");
+        Button confirmBtn = new Button("confirm");
+
+        Building b = building;
+
+        xpBtn.setOnMouseClicked(mouseEvent -> {
+            x[0] = x[0] +1;
+            testPlace(new Placement(x[0], y[0], direction[0], building), gridPane, ui);
+            xText.setText("X: " + x[0]);
+        });
+        xnBtn.setOnMouseClicked(mouseEvent -> {
+            x[0] = x[0] -1;
+            testPlace(new Placement(x[0], y[0], direction[0], building), gridPane, ui);
+            xText.setText("X: " + x[0]);
+        });
+        ypBtn.setOnMouseClicked(mouseEvent -> {
+            y[0]++;
+            testPlace(new Placement(x[0], y[0], direction[0], building), gridPane, ui);
+            yText.setText("Y: " + y[0]);
+        });
+        ynBtn.setOnMouseClicked(mouseEvent -> {
+            y[0] = y[0] -1;
+            testPlace(new Placement(x[0], y[0], direction[0], building), gridPane, ui);
+            yText.setText("Y: " + y[0]);
+        });
+        rotateBtn.setOnMouseClicked(mouseEvent -> {
+            switch (direction[0]){
+                case _0:
+                    direction[0] = Direction._90;
+                    break;
+                case _90:
+                    direction[0] = Direction._180;
+                    break;
+                case _180:
+                    direction[0] = Direction._270;
+                    break;
+                case _270:
+                    direction[0] = Direction._0;
+                    break;
+            }
+            testPlace(new Placement(x[0], y[0], direction[0], building), gridPane, ui);
+        });
+
+        confirmBtn.setOnMouseClicked(mouseEvent -> {
+            game.takeTurn(new Placement(x[0], y[0], direction[0], building));
+            gridPane.getChildren().remove(xpBtn);
+            gridPane.getChildren().remove(xText);
+            gridPane.getChildren().remove(xnBtn);
+            gridPane.getChildren().remove(ypBtn);
+            gridPane.getChildren().remove(yText);
+            gridPane.getChildren().remove(ynBtn);
+            gridPane.getChildren().remove(rotateBtn);
+            gridPane.getChildren().remove(confirmBtn);
+            buttonsCreated = false;
+        });
+
+        gridPane.add(xpBtn, 15, 1);
+        gridPane.add(xText,14,1);
+        gridPane.add(xnBtn, 13, 1);
+
+        gridPane.add(ypBtn, 15, 3);
+        gridPane.add(yText,14,3);
+        gridPane.add(ynBtn, 13, 3);
+
+        gridPane.add(rotateBtn, 13, 5);
+        gridPane.add(confirmBtn, 13, 7);
+    }
+
+    private void testPlace(Placement placement, GridPane gridPane, Stage ui){
+        Game testGame = game.copy();
+        testGame.takeTurn(placement);
+        updateUI(ui, gridPane, testGame);
+    }
+
 
     @Override
     public void run() {
