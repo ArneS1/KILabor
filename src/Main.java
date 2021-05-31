@@ -118,7 +118,7 @@ public class Main extends Application implements Runnable {
             }
         }
 
-        if(!buttonsCreated){
+        if (!buttonsCreated) {
             createBuildingButtons(gridPane, ui);
             buttonsCreated = true;
         }
@@ -181,14 +181,14 @@ public class Main extends Application implements Runnable {
 
         for (Building building : game.getPlacableBuildings()
         ) {
-            if(building.getColor() == game.getCurrentPlayer()){
+            if (building.getColor() == game.getCurrentPlayer()) {
                 Button btn = new Button(building.getName());
                 btn.setOnMouseClicked(mouseEvent -> {
                     for (Button butn : buildingButtons
                     ) {
                         gridPane.getChildren().remove(butn);
                     }
-                  humanPlayerTurn(game.getCurrentPlayer(), building, gridPane, ui);
+                    humanPlayerTurn(game.getCurrentPlayer(), building, gridPane, ui);
                 });
                 btn.setMinWidth(50);
                 gridPane.add(btn, x, y);
@@ -198,7 +198,7 @@ public class Main extends Application implements Runnable {
         }
     }
 
-    private void humanPlayerTurn(Color player, Building building, GridPane gridPane, Stage ui){
+    private void humanPlayerTurn(Color player, Building building, GridPane gridPane, Stage ui) {
 
         final int[] x = {0};
         final int[] y = {0};
@@ -218,12 +218,12 @@ public class Main extends Application implements Runnable {
         Building b = building;
 
         xpBtn.setOnMouseClicked(mouseEvent -> {
-            x[0] = x[0] +1;
+            x[0] = x[0] + 1;
             testPlace(new Placement(x[0], y[0], direction[0], building), gridPane, ui);
             xText.setText("X: " + x[0]);
         });
         xnBtn.setOnMouseClicked(mouseEvent -> {
-            x[0] = x[0] -1;
+            x[0] = x[0] - 1;
             testPlace(new Placement(x[0], y[0], direction[0], building), gridPane, ui);
             xText.setText("X: " + x[0]);
         });
@@ -233,12 +233,12 @@ public class Main extends Application implements Runnable {
             yText.setText("Y: " + y[0]);
         });
         ynBtn.setOnMouseClicked(mouseEvent -> {
-            y[0] = y[0] -1;
+            y[0] = y[0] - 1;
             testPlace(new Placement(x[0], y[0], direction[0], building), gridPane, ui);
             yText.setText("Y: " + y[0]);
         });
         rotateBtn.setOnMouseClicked(mouseEvent -> {
-            switch (direction[0]){
+            switch (direction[0]) {
                 case _0:
                     direction[0] = Direction._90;
                     break;
@@ -269,18 +269,18 @@ public class Main extends Application implements Runnable {
         });
 
         gridPane.add(xpBtn, 15, 1);
-        gridPane.add(xText,14,1);
+        gridPane.add(xText, 14, 1);
         gridPane.add(xnBtn, 13, 1);
 
         gridPane.add(ypBtn, 15, 3);
-        gridPane.add(yText,14,3);
+        gridPane.add(yText, 14, 3);
         gridPane.add(ynBtn, 13, 3);
 
         gridPane.add(rotateBtn, 13, 5);
         gridPane.add(confirmBtn, 13, 7);
     }
 
-    private void testPlace(Placement placement, GridPane gridPane, Stage ui){
+    private void testPlace(Placement placement, GridPane gridPane, Stage ui) {
         Game testGame = game.copy();
         testGame.takeTurn(placement);
         updateUI(ui, gridPane, testGame);
