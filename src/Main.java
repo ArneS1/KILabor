@@ -184,6 +184,10 @@ public class Main extends Application implements Runnable {
             if(building.getColor() == game.getCurrentPlayer()){
                 Button btn = new Button(building.getName());
                 btn.setOnMouseClicked(mouseEvent -> {
+                    for (Button butn : buildingButtons
+                    ) {
+                        gridPane.getChildren().remove(butn);
+                    }
                   humanPlayerTurn(game.getCurrentPlayer(), building, gridPane, ui);
                 });
                 btn.setMinWidth(50);
