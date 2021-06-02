@@ -1,21 +1,25 @@
 package ki;
 
+import javafx.geometry.Pos;
 import ki.cathedral.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 public class CoolAI {
 
     private List<Placement> possibleTurns;
     public Boolean isDone = false;
+    public AiMode aiMode = AiMode.Initial;
 
     /*
     Es folgen die wichtigkeiten bestimmter einflussfaktoren auf den nächsten Zug.
     Jeder zur wird anhand der Faktoren evaluiert und der höchstbewertetste wird ausgeführt.
      */
     private float EVALUTION_MoveDifference = 1;
+    private float EVALUTION_CloseToPiece = 2;
     private float EVALUTION_CloseToWall = 2;
 
     public CoolAI() {
@@ -24,7 +28,7 @@ public class CoolAI {
 
     public Placement takeTurn(Game game) {
 
-        possibleTurns = getPossibleTurns(game, game.getCurrentPlayer());
+        possibleTurns = getPossibleTurns(game);
 
         //Falls kein Zug mehr möglich ist
         if (possibleTurns.isEmpty()) {
@@ -33,21 +37,26 @@ public class CoolAI {
             return null; // und der gegner vielleicht noch ziehen kann
         }
 
+        setAiMode(game);
         return getTurn(game);
     }
 
     Placement getTurn(Game game) {
         float rating = 0;
-        Placement bestTurn = possibleTurns.get(0);
+        List<Placement> bestTurns = new ArrayList<>(possibleTurns);
 
         for(Placement turn : possibleTurns){
             float currentRating = evaluateTurn(turn, game);
-            if(currentRating > rating){
-                rating = currentRating;
-                bestTurn = turn;
+            if(currentRating == rating){
+                bestTurns.add(turn);
+            } else if(currentRating > rating){
+                bestTurns.clear();
+                bestTurns.add(turn);
             }
         }
-        return bestTurn;
+
+        Random r = new Random();
+        return bestTurns.get(r.nextInt(bestTurns.size()));
     }
 
     private void removeImpossibleTurns(Game game) {
@@ -60,11 +69,11 @@ public class CoolAI {
         possibleTurns.removeAll(deleteTurns);
     }
 
-    public List<Placement> getPossibleTurns(Game game, Color player) {
+    public List<Placement> getPossibleTurns(Game game) {
         List<Placement> allPlacements = new ArrayList<>();
 
         List<Building> buildings = game.getPlacableBuildings().stream()
-                .filter(building -> building.getColor() == player)
+                .filter(building -> building.getColor() == game.getCurrentPlayer())
                 .collect(Collectors.toList());
 
         for (int x = 0; x < 10; ++x) {
@@ -99,11 +108,14 @@ public class CoolAI {
     }
 
     void endGame() {
-        //System.out.println(game.lastTurn());
-        //System.out.println(game.getCurrentPlayer() + " hat keinen möglichen Zug gefunden und das Spiel beendet!");
-        //System.out.println("Score: " + game.score() + "\n");
-        //System.out.println("Leftover buildings " + game.getPlacableBuildings());
         isDone = true;
+    }
+
+    private void setAiMode(Game game){
+        aiMode = AiMode.Early;
+        if(game.getTurnsSize() == 0) aiMode = AiMode.Initial;
+        if(possibleTurns.size() < 1000) aiMode = AiMode.Mid;
+        if(possibleTurns.size() < 150) aiMode = AiMode.Late;
     }
 
     private float evaluateTurn(Placement turn, Game game){
@@ -125,10 +137,17 @@ public class CoolAI {
         }
 
         //Evaluation Methods
-        //TODO: start-game / mid-game / end-game mode
-
-        if(possibleTurns.size() < 100){
-            rating += evaluateMovesDifference(turn, testGame, testAi, opponent);
+        switch (aiMode){
+            case Initial:
+                //TODO: Cathedral Placement
+                break;
+            case Early:
+                break;
+            case Mid:
+                break;
+            case Late:
+                rating += evaluateMovesDifference(turn, testGame, testAi);
+                break;
         }
 
         /*
@@ -143,16 +162,38 @@ public class CoolAI {
         return rating;
     }
 
-    private float evaluateMovesDifference(Placement turn, Game testGame, CoolAI testAi, Color opponent) {
+    private float evaluatePieceDistance(Placement turn, Game testGame){
+        float addToRating = 0;
+
+        /*
+        Position holen
+        Building Beschaffenheit holen (Länge breite direction)
+
+        Abstand von Kante des Buildings zu nächstem farbigen feld in X+, X-, Y+, Y-
+        Farbe des feld checken
+        farbe = eigene -> Rating+
+        wiederholen für nächste richtung
+         */
+
+        Position position = turn.getPosition();
+        Building building = turn.getBuilding();
+
+        //X+ richtung
+        int distance = 0;
+
+        return addToRating;
+    }
+
+    private float evaluateMovesDifference(Placement turn, Game testGame, CoolAI testAi) {
         float addToRating = 0;
         Game testGame2 = testGame.copy();
 
         testGame.undoLastTurn();
-        float enemyPossibleMovesBeforeMove  = testAi.getPossibleTurns(testGame, opponent).size();
+        float enemyPossibleMovesBeforeMove  = testAi.getPossibleTurns(testGame).size();
         System.out.println("before: " + enemyPossibleMovesBeforeMove);
 
         testGame2.takeTurn(turn);
-        float enemyPossibleMovesAfterMove = testAi.getPossibleTurns(testGame2, opponent).size();
+        float enemyPossibleMovesAfterMove = testAi.getPossibleTurns(testGame2).size();
         System.out.println("after: " + enemyPossibleMovesAfterMove);
 
         addToRating = (1-(enemyPossibleMovesAfterMove / enemyPossibleMovesBeforeMove)) * EVALUTION_MoveDifference;
