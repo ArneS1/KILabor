@@ -11,6 +11,7 @@ public class CoolAI {
 
     private List<Placement> possibleTurns;
     private Board savedGameBoard;
+    public Boolean isDone = false;
 
     public CoolAI() {
         possibleTurns = new ArrayList<>();
@@ -97,6 +98,6 @@ public class CoolAI {
         System.out.println("Score: " + game.score() + "\n");
         System.out.println("Leftover buildings " + game.getPlacableBuildings());
 
-        System.exit(0);
+        isDone = true;
     }
 }

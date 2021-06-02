@@ -54,17 +54,25 @@ public class Main extends Application implements Runnable {
 
 
         button_aiOne.setOnMouseClicked(mouseEvent -> {
-            aiTurn(game, ai_one);
-            updateUI(primaryStage, gridPane, game);
-            button_aiOne.setDisable(true);
-            button_aiTwo.setDisable(false);
+            if(!ai_one.isDone){
+                aiTurn(game, ai_one);
+                updateUI(primaryStage, gridPane, game);
+                button_aiOne.setDisable(true);
+                button_aiTwo.setDisable(false);
+            } else {
+                button_aiOne.setText("N/A");
+            }
         });
 
         button_aiTwo.setOnMouseClicked(mouseEvent -> {
-            aiTurn(game, ai_two);
-            updateUI(primaryStage, gridPane, game);
-            button_aiOne.setDisable(false);
-            button_aiTwo.setDisable(true);
+            if(!ai_two.isDone){
+                aiTurn(game, ai_two);
+                updateUI(primaryStage, gridPane, game);
+                button_aiOne.setDisable(false);
+                button_aiTwo.setDisable(true);
+            } else {
+                button_aiTwo.setText("N/A");
+            }
         });
 
         gridPane.add(button_aiOne, 0, 1);
@@ -179,13 +187,11 @@ public class Main extends Application implements Runnable {
 
         buildingButtons.clear();
 
-        for (Building building : game.getPlacableBuildings()
-        ) {
+        for (Building building : game.getPlacableBuildings()) {
             if (building.getColor() == game.getCurrentPlayer()) {
                 Button btn = new Button(building.getName());
                 btn.setOnMouseClicked(mouseEvent -> {
-                    for (Button butn : buildingButtons
-                    ) {
+                    for (Button butn : buildingButtons) {
                         gridPane.getChildren().remove(butn);
                     }
                     humanPlayerTurn(game.getCurrentPlayer(), building, gridPane, ui);
