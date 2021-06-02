@@ -24,7 +24,6 @@ public class Main extends Application implements Runnable {
     private Game game;
     private Text scenetitle;
     private Text score;
-    private Text possibleTurns;
     private List<Button> buildingButtons = new ArrayList<>();
     CoolAI ai_one;
     CoolAI ai_two;
@@ -60,7 +59,9 @@ public class Main extends Application implements Runnable {
                 button_aiOne.setDisable(true);
                 button_aiTwo.setDisable(false);
             } else {
-                button_aiOne.setText("N/A");
+                button_aiOne.setText("ONE: Done");
+                button_aiOne.setDisable(true);
+                button_aiTwo.setDisable(false);
             }
         });
 
@@ -71,23 +72,14 @@ public class Main extends Application implements Runnable {
                 button_aiOne.setDisable(false);
                 button_aiTwo.setDisable(true);
             } else {
-                button_aiTwo.setText("N/A");
+                button_aiTwo.setText("TWO: Done");
+                button_aiOne.setDisable(false);
+                button_aiTwo.setDisable(true);
             }
         });
 
         gridPane.add(button_aiOne, 0, 1);
         gridPane.add(button_aiTwo, 1, 1);
-
-        Button evaluateTurnsButton = new Button("evaluate turns");
-        possibleTurns = new Text("Mögliche Züge: ");
-
-        evaluateTurnsButton.setOnMouseClicked(mouseEvent -> {
-            possibleTurns.setText("Mögliche Züge: " + ai_one.getPossibleTurns(game).size());
-        });
-
-        gridPane.add(evaluateTurnsButton, 0, 2);
-        gridPane.add(possibleTurns, 0, 3);
-
 
         primaryStage.setTitle("Hello Eike");
         primaryStage.setScene(new Scene(gridPane, 1000, 700));
