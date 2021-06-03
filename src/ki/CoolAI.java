@@ -18,9 +18,11 @@ public class CoolAI {
     Es folgen die wichtigkeiten bestimmter einflussfaktoren auf den nächsten Zug.
     Jeder zur wird anhand der Faktoren evaluiert und der höchstbewertetste wird ausgeführt.
      */
-    private float EVALUTION_MoveDifference = 1;
-    private float EVALUTION_CloseToPiece = 2;
-    private float EVALUTION_CloseToWall = 2;
+    private double EVALUTION_MoveDifference = 1;
+    private double EVALUTION_CloseToPiece = 2;
+    private double EVALUTION_CloseToWall = 2;
+    private double EVALUATION_EnclosionPerField = .2;
+    private double EVALUATION_EnclosionPerCapturedField = .5;
 
     public CoolAI() {
         possibleTurns = new ArrayList<>();
@@ -42,11 +44,11 @@ public class CoolAI {
     }
 
     Placement getTurn(Game game) {
-        float rating = 0;
+        double rating = 0;
         List<Placement> bestTurns = new ArrayList<>(possibleTurns);
 
         for(Placement turn : possibleTurns){
-            float currentRating = evaluateTurn(turn, game);
+            double currentRating = evaluateTurn(turn, game);
             if(currentRating == rating){
                 bestTurns.add(turn);
             } else if(currentRating > rating){
@@ -115,11 +117,11 @@ public class CoolAI {
         aiMode = AiMode.Early;
         if(game.getTurnsSize() == 0) aiMode = AiMode.Initial;
         if(possibleTurns.size() < 1000) aiMode = AiMode.Mid;
-        if(possibleTurns.size() < 150) aiMode = AiMode.Late;
+        if(possibleTurns.size() < 100) aiMode = AiMode.Late;
     }
 
-    private float evaluateTurn(Placement turn, Game game){
-        float rating = 0;
+    private double evaluateTurn(Placement turn, Game game){
+        double rating = 0;
         Game testGame = game.copy();
         CoolAI testAi = new CoolAI();
         Color me = Color.Black;
@@ -144,6 +146,7 @@ public class CoolAI {
             case Early:
                 break;
             case Mid:
+                rating += evaluateEnclosion(turn, testGame, me);
                 break;
             case Late:
                 rating += evaluateMovesDifference(turn, testGame, testAi);
@@ -162,8 +165,54 @@ public class CoolAI {
         return rating;
     }
 
-    private float evaluatePieceDistance(Placement turn, Game testGame){
-        float addToRating = 0;
+    private double evaluateEnclosion(Placement turn, Game testGame, Color currentPlayer){
+        double addToRating = 0;
+        Color enclosedAreaColor = Color.White_Owned;
+        Color opponent = Color.Black;
+        int enclosedFields = 0;
+        int capturedBuildingFields = 0;
+
+        //saving board before and after the turn
+        Color[][] currentBoard = testGame.getBoard().getBoardAsColorArray();
+        testGame.takeTurn(turn);
+        Color[][] afterMoveBoard = testGame.getBoard().getBoardAsColorArray();
+
+        // getting the correct player color
+        if(currentPlayer == Color.Black){
+            enclosedAreaColor = Color.Black_Owned;
+            opponent = Color.White;
+        }
+
+        //checking each field before and after move to see if its color changed to being enclosed or captured
+        Color currentField = Color.None;
+        Color afterMoveField = Color.None;
+        for (int x = 0; x < 10; ++x) {
+            for (int y = 0; y < 10; ++y) {
+                currentField = currentBoard[x][y];
+                afterMoveField = afterMoveBoard[x][y];
+
+                if(currentField != enclosedAreaColor && afterMoveField == enclosedAreaColor){
+                    enclosedFields++;
+                } else if(currentField == opponent && afterMoveField == currentPlayer){
+                    capturedBuildingFields++;
+                }
+            }
+        }
+
+        // adding the Evaluation Value per enclosed Field
+        addToRating += enclosedFields * EVALUATION_EnclosionPerField;
+        // adding the value of the Enclosion with capturing per captured Field
+        addToRating += capturedBuildingFields * EVALUATION_EnclosionPerCapturedField;
+
+        System.out.println("EVALUATING ENCLOSION");
+        System.out.println("ENCLOSED FIELDS: " + enclosedFields);
+        System.out.println("CAPTURED FIELDS: " + capturedBuildingFields);
+
+        return addToRating;
+    }
+
+    private double evaluatePieceDistance(Placement turn, Game testGame){
+        double addToRating = 0;
 
         /*
         Position holen
@@ -184,8 +233,8 @@ public class CoolAI {
         return addToRating;
     }
 
-    private float evaluateMovesDifference(Placement turn, Game testGame, CoolAI testAi) {
-        float addToRating = 0;
+    private double evaluateMovesDifference(Placement turn, Game testGame, CoolAI testAi) {
+        double addToRating = 0;
         Game testGame2 = testGame.copy();
 
         testGame.undoLastTurn();
