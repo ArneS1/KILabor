@@ -103,9 +103,6 @@ public class CoolAI {
                 }
             }
         }
-
-        //System.out.println("Mögliche Züge: " + allPlacements.size());
-
         return allPlacements;
     }
 
@@ -193,7 +190,7 @@ public class CoolAI {
 
                 if(currentField != enclosedAreaColor && afterMoveField == enclosedAreaColor){
                     enclosedFields++;
-                } else if(currentField == opponent && afterMoveField == currentPlayer){
+                } else if(currentField == opponent && afterMoveField == enclosedAreaColor){
                     capturedBuildingFields++;
                 }
             }
