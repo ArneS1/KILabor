@@ -18,6 +18,10 @@ public class GameController {
         }
     }
 
+    public void resetGame(){
+        game = new Game();
+    }
+
     // Getter / Setter
     public Game getGame(){
         return game;

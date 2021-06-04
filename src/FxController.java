@@ -23,6 +23,7 @@ public class FxController {
     //Buttons
     private Button button_aiOne;
     private Button button_aiTwo;
+    private Button buttonReset;
 
     //Game Logic
     private List<Button> buildingButtons = new ArrayList<>();
@@ -58,8 +59,9 @@ public class FxController {
         score.setFont(Font.font("Tahoma", FontWeight.NORMAL, 15));
         gridPane.add(score, 0, 13, 2, 1);
 
-        button_aiOne = new Button("AI ONE");
-        button_aiTwo = new Button("AI TWO");
+        button_aiOne = new Button("AI GREEN");
+        button_aiTwo = new Button("AI BLACK");
+        button_aiTwo.setDisable(true);
 
         button_aiOne.setOnMouseClicked(mouseEvent -> {
             aiButtonOnClick(aiOne, button_aiOne, button_aiTwo);
@@ -71,6 +73,17 @@ public class FxController {
 
         gridPane.add(button_aiOne, 0, 1);
         gridPane.add(button_aiTwo, 1, 1);
+
+        buttonReset = new Button("New Game");
+        buttonReset.setOnMouseClicked(mouseEvent -> {
+            gameController.resetGame();
+            aiOne = new CoolAI();
+            aiTwo = new CoolAI();
+            updateUI(gameController.getGame());
+        });
+        gridPane.add(buttonReset, 0, 15);
+
+        updateUI(gameController.getGame());
 
         stage.setTitle("Hello Eike");
         stage.setScene(new Scene(gridPane, 1000, 700));
@@ -95,6 +108,8 @@ public class FxController {
         updateSceneTitle(game);
 
         renderBoard(game.lastTurn().getBoard().getBoardAsColorArray());
+        createBuildingButtons();
+
 
         if (!buttonsCreated) {
             createBuildingButtons();
