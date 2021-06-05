@@ -1,9 +1,5 @@
 package ki;
-
-import javafx.concurrent.Task;
-import javafx.geometry.Pos;
 import ki.cathedral.*;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -11,19 +7,22 @@ public class CoolAI {
 
     private List<Placement> possibleTurns;
     public Boolean isDone;
-    public AiMode aiMode;
+    private AiMode aiMode;
     private Timer timer;
     private int timePerMoveInSeconds;
+    public double rating;
 
     /*
     Es folgen die wichtigkeiten bestimmter einflussfaktoren auf den nächsten Zug.
     Jeder zur wird anhand der Faktoren evaluiert und der höchstbewertetste wird ausgeführt.
      */
-    private double EVALUTION_MoveDifference = 1;
-    private double EVALUTION_CloseToPiece = 2;
-    private double EVALUTION_CloseToWall = 2;
-    private double EVALUATION_EnclosionPerField = .2;
-    private double EVALUATION_EnclosionPerCapturedField = .5;
+    private double EVALUTION_MoveDifference = 4;
+    private double EVALUTION_CloseToOwnPiece = 2;
+    private double EVALUTION_CloseToEnemyPiece = 1;
+    private double EVALUTION_CloseToWall = 1;
+    private double EVALUATION_EnclosionPerField = .8;
+    private double EVALUATION_EnclosionPerCapturedField = 4;
+    private double EVALUATION_PlacedOnOwnedArea = -3;
 
     public CoolAI() {
         possibleTurns = new ArrayList<>();
@@ -49,7 +48,7 @@ public class CoolAI {
     }
 
     Placement getTurn(Game game) {
-        double rating = 0;
+        rating = 0;
         Random r = new Random();
         List<Placement> bestTurns = new ArrayList<>(possibleTurns);
         final Boolean[] abortEvaluation = {false};
@@ -61,15 +60,17 @@ public class CoolAI {
             }
         }, timePerMoveInSeconds * 1000);
 
-        for(Placement turn : possibleTurns){
-            if(abortEvaluation[0]) {
+        for (Placement turn : possibleTurns) {
+            System.out.println("Evaluating: " + turn.getBuilding().getName() + " X= " + turn.x() + " Y= " + turn.y());
+            if (abortEvaluation[0]) {
                 System.out.println("Aborting evaluation...");
                 return bestTurns.get(r.nextInt(bestTurns.size()));
             }
             double currentRating = evaluateTurn(turn, game);
-            if(currentRating == rating){
+            System.out.println("rating received: " + currentRating);
+            if (currentRating == rating) {
                 bestTurns.add(turn);
-            } else if(currentRating > rating){
+            } else if (currentRating > rating) {
                 System.out.println("last best: " + rating);
                 System.out.println("Better Rating found: " + currentRating);
                 rating = currentRating;
@@ -77,8 +78,9 @@ public class CoolAI {
                 bestTurns.add(turn);
             }
         }
-
-        return bestTurns.get(r.nextInt(bestTurns.size()));
+        int returnNumber = r.nextInt(bestTurns.size());
+        System.out.println("Returning Move: " + bestTurns.get(returnNumber).getBuilding().getName() + " rated: " + rating);
+        return bestTurns.get(returnNumber);
     }
 
     private void removeImpossibleTurns(Game game) {
@@ -130,21 +132,21 @@ public class CoolAI {
         isDone = true;
     }
 
-    private void setAiMode(Game game){
+    private void setAiMode(Game game) {
         aiMode = AiMode.Early;
-        if(game.getTurnsSize() == 0) aiMode = AiMode.Initial;
-        if(possibleTurns.size() < 1000) aiMode = AiMode.Mid;
-        if(possibleTurns.size() < 100) aiMode = AiMode.Late;
+        if (game.getTurnsSize() == 0) aiMode = AiMode.Initial;
+        if (possibleTurns.size() < 1000) aiMode = AiMode.Mid;
+        if (possibleTurns.size() < 100) aiMode = AiMode.Late;
     }
 
-    private double evaluateTurn(Placement turn, Game game){
+    private double evaluateTurn(Placement turn, Game game) {
         double rating = 0;
         Game testGame = game.copy();
         CoolAI testAi = new CoolAI();
         Color me = Color.Black;
         Color opponent = Color.Black;
 
-        switch (game.getCurrentPlayer()){
+        switch (game.getCurrentPlayer()) {
             case Black:
                 me = Color.Black;
                 opponent = Color.White;
@@ -156,12 +158,13 @@ public class CoolAI {
         }
 
         //Evaluation Methods
-        switch (aiMode){
+        switch (aiMode) {
             case Initial:
                 //TODO: Cathedral Placement
                 break;
             case Early:
                 rating += evaluateEnclosion(turn, testGame, me);
+                rating += evaluatePieceDistance(turn, testGame, me, opponent);
                 break;
             case Mid:
                 rating += evaluateEnclosion(turn, testGame, me);
@@ -184,7 +187,8 @@ public class CoolAI {
         return rating;
     }
 
-    private double evaluateEnclosion(Placement turn, Game testGame, Color currentPlayer){
+    private double evaluateEnclosion(Placement turn, Game testGame, Color currentPlayer) {
+        Game enclosionGame = testGame.copy();
         double addToRating = 0;
         Color enclosedAreaColor = Color.White_Owned;
         Color opponent = Color.Black;
@@ -192,12 +196,12 @@ public class CoolAI {
         int capturedBuildingFields = 0;
 
         //saving board before and after the turn
-        Color[][] currentBoard = testGame.getBoard().getBoardAsColorArray();
-        testGame.takeTurn(turn);
-        Color[][] afterMoveBoard = testGame.getBoard().getBoardAsColorArray();
+        Color[][] currentBoard = enclosionGame.getBoard().getBoardAsColorArray();
+        enclosionGame.takeTurn(turn);
+        Color[][] afterMoveBoard = enclosionGame.getBoard().getBoardAsColorArray();
 
         // getting the correct player color
-        if(currentPlayer == Color.Black){
+        if (currentPlayer == Color.Black) {
             enclosedAreaColor = Color.Black_Owned;
             opponent = Color.White;
         }
@@ -210,10 +214,13 @@ public class CoolAI {
                 currentField = currentBoard[x][y];
                 afterMoveField = afterMoveBoard[x][y];
 
-                if(currentField != enclosedAreaColor && afterMoveField == enclosedAreaColor){
+                if (currentField != enclosedAreaColor && afterMoveField == enclosedAreaColor) {
                     enclosedFields++;
-                } else if(currentField == opponent && afterMoveField == enclosedAreaColor){
+                } else if (currentField == opponent && afterMoveField == enclosedAreaColor) {
                     capturedBuildingFields++;
+                }
+                if(currentField == enclosedAreaColor && afterMoveField == currentPlayer){
+                    addToRating += EVALUATION_PlacedOnOwnedArea;
                 }
             }
         }
@@ -223,51 +230,115 @@ public class CoolAI {
         // adding the value of the Enclosion with capturing per captured Field
         addToRating += capturedBuildingFields * EVALUATION_EnclosionPerCapturedField;
 
-        System.out.println("EVALUATING ENCLOSION");
-        System.out.println("ENCLOSED FIELDS: " + enclosedFields);
-        System.out.println("CAPTURED FIELDS: " + capturedBuildingFields);
+        //System.out.println("EVALUATING ENCLOSION");
+        //System.out.println("ENCLOSED FIELDS: " + enclosedFields);
+        //System.out.println("CAPTURED FIELDS: " + capturedBuildingFields);
 
         return addToRating;
     }
 
-    private double evaluatePieceDistance(Placement turn, Game testGame){
+    private double evaluatePieceDistance(Placement turn, Game testGame, Color me, Color opponent) {
         double addToRating = 0;
-
-        /*
-        Position holen
-        Building Beschaffenheit holen (Länge breite direction)
-
-        Abstand von Kante des Buildings zu nächstem farbigen feld in X+, X-, Y+, Y-
-        Farbe des feld checken
-        farbe = eigene -> Rating+
-        wiederholen für nächste richtung
-         */
+        Game pieceDistanceGame = testGame.copy();
 
         Position position = turn.getPosition();
-        Building building = turn.getBuilding();
+        int x = position.x();
+        int y = position.y();
 
-        //X+ richtung
-        int distance = 0;
+        Color[][] board = pieceDistanceGame.getBoard().getBoardAsColorArray();
 
+        //Distance to Wall
+        if (x > 6) {
+            addToRating += (10 - x) * (EVALUTION_CloseToWall / 8);
+        }
+        if (x < 4) {
+            addToRating += x * (EVALUTION_CloseToWall / 8);
+        }
+        if (y > 6) {
+            addToRating += (10 - y) * (EVALUTION_CloseToWall / 8);
+        }
+        if (y < 4) {
+            addToRating += y * (EVALUTION_CloseToWall / 8);
+        }
+        //System.out.println("building is close to a wall! Rated: " + addToRating);
+
+        for (int i = 1; i <= 3; i++) {
+            double initialRating = 0;
+            initialRating += addToRating;
+
+            x += i;
+            if (x <= 9 && y <= 9 && x >= 0 && y >= 0 && !belongsToBuilding(turn, pieceDistanceGame, x, y, me)) {
+                if (board[x][y] == me) {
+                    addToRating += EVALUTION_CloseToOwnPiece / i;
+                } else if (board[x][y] == opponent) {
+                    addToRating += EVALUTION_CloseToEnemyPiece / i;
+                }
+            }
+            x -= i;
+            y += i;
+            if (x <= 9 && y <= 9 && x >= 0 && y >= 0 && !belongsToBuilding(turn, pieceDistanceGame, x, y, me)) {
+                if (board[x][y] == me) {
+                    addToRating += EVALUTION_CloseToOwnPiece / i;
+                } else if (board[x][y] == opponent) {
+                    addToRating += EVALUTION_CloseToEnemyPiece / i;
+                }
+            }
+            x -= i;
+            y -= i;
+            if (x <= 9 && y <= 9 && x >= 0 && y >= 0 && !belongsToBuilding(turn, pieceDistanceGame, x, y, me)) {
+                if (board[x][y] == me) {
+                    addToRating += EVALUTION_CloseToOwnPiece / i;
+                } else if (board[x][y] == opponent) {
+                    addToRating += EVALUTION_CloseToEnemyPiece / i;
+                }
+            }
+            x += i;
+            y -= i;
+            if (x <= 9 && y <= 9 && x >= 0 && y >= 0 && !belongsToBuilding(turn, pieceDistanceGame, x, y, me)) {
+                if (board[x][y] == me) {
+                    addToRating += EVALUTION_CloseToOwnPiece / i;
+                } else if (board[x][y] == opponent) {
+                    addToRating += EVALUTION_CloseToEnemyPiece / i;
+                }
+            }
+            if(addToRating > initialRating){
+                break;
+            }
+        }
         return addToRating;
+    }
+
+    private boolean belongsToBuilding(Placement turn, Game testGame, int x, int y, Color me){
+        Game belongsToBuildingGame = testGame.copy();
+        Color[][] before = belongsToBuildingGame.getBoard().getBoardAsColorArray();
+        belongsToBuildingGame.takeTurn(turn);
+        Color[][] after = belongsToBuildingGame.getBoard().getBoardAsColorArray();
+        if(before[x][y] != after[x][y] && after[x][y] == me){
+            return true;
+        }
+        return false;
     }
 
     private double evaluateMovesDifference(Placement turn, Game testGame, CoolAI testAi) {
         double addToRating = 0;
+        Game movesDiffGame = testGame.copy();
         Game testGame2 = testGame.copy();
 
-        testGame.undoLastTurn();
-        float enemyPossibleMovesBeforeMove  = testAi.getPossibleTurns(testGame).size();
-        System.out.println("before: " + enemyPossibleMovesBeforeMove);
-
+        movesDiffGame.undoLastTurn();
+        float enemyPossibleMovesBeforeMove = testAi.getPossibleTurns(movesDiffGame).size();
         testGame2.takeTurn(turn);
-        float enemyPossibleMovesAfterMove = testAi.getPossibleTurns(testGame2).size();
-        System.out.println("after: " + enemyPossibleMovesAfterMove);
 
-        addToRating = (1-(enemyPossibleMovesAfterMove / enemyPossibleMovesBeforeMove)) * EVALUTION_MoveDifference;
-        System.out.println("Ergebnis: "+ addToRating);
+        float enemyPossibleMovesAfterMove = testAi.getPossibleTurns(testGame2).size();
+        addToRating = (1 - (enemyPossibleMovesAfterMove / enemyPossibleMovesBeforeMove)) * EVALUTION_MoveDifference;
 
         return addToRating;
+    }
+
+    public double rateLastTurn(Game game){
+        Game testGame = game.copy();
+        Placement placement = testGame.lastTurn().getAction();
+        testGame.undoLastTurn();
+        return evaluateTurn(placement,testGame);
     }
 
 }

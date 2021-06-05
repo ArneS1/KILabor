@@ -81,6 +81,8 @@ public class FxController {
             gameController.resetGame();
             aiOne = new CoolAI();
             aiTwo = new CoolAI();
+            button_aiOne.setText("AI GREEN");
+            button_aiTwo.setText("AI BLACK");
             updateUI(gameController.getGame());
         });
         gridPane.add(buttonReset, 0, 15);
@@ -94,7 +96,7 @@ public class FxController {
 
     private void aiButtonOnClick(CoolAI ai, Button buttonMe, Button buttonOther) {
         if (ai.isDone) {
-            buttonMe.setText("ONE: Done");
+            buttonMe.setText("Done");
             buttonMe.setDisable(true);
             buttonOther.setDisable(false);
         } else {
@@ -152,7 +154,8 @@ public class FxController {
         if(game.getTurnsSize() > 1){
             rScore += "Last Move: \n";
             rScore += game.lastTurn().getAction().getBuilding().getName() +"\n";
-            rScore += "At X= " + game.lastTurn().getAction().x() + " and Y: " + game.lastTurn().getAction().y();
+            rScore += "At X = " + game.lastTurn().getAction().x() + " and Y = " + game.lastTurn().getAction().y() +"\n";
+            rScore += "rated: " + aiOne.rateLastTurn(game);
         }
         return rScore;
     }
