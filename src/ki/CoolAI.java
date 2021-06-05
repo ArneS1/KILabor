@@ -1,18 +1,19 @@
 package ki;
 
+import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import ki.cathedral.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CoolAI {
 
     private List<Placement> possibleTurns;
-    public Boolean isDone = false;
-    public AiMode aiMode = AiMode.Initial;
+    public Boolean isDone;
+    public AiMode aiMode;
+    private Timer timer;
+    private int timePerMoveInSeconds;
 
     /*
     Es folgen die wichtigkeiten bestimmter einflussfaktoren auf den nächsten Zug.
@@ -26,6 +27,10 @@ public class CoolAI {
 
     public CoolAI() {
         possibleTurns = new ArrayList<>();
+        isDone = false;
+        aiMode = AiMode.Initial;
+        timer = new Timer();
+        timePerMoveInSeconds = 30;
     }
 
     public Placement takeTurn(Game game) {
@@ -45,19 +50,34 @@ public class CoolAI {
 
     Placement getTurn(Game game) {
         double rating = 0;
+        Random r = new Random();
         List<Placement> bestTurns = new ArrayList<>(possibleTurns);
+        final Boolean[] abortEvaluation = {false};
+
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                abortEvaluation[0] = true;
+            }
+        }, timePerMoveInSeconds * 1000);
 
         for(Placement turn : possibleTurns){
+            if(abortEvaluation[0]) {
+                System.out.println("Aborting evaluation...");
+                return bestTurns.get(r.nextInt(bestTurns.size()));
+            }
             double currentRating = evaluateTurn(turn, game);
             if(currentRating == rating){
                 bestTurns.add(turn);
             } else if(currentRating > rating){
+                System.out.println("last best: " + rating);
+                System.out.println("Better Rating found: " + currentRating);
+                rating = currentRating;
                 bestTurns.clear();
                 bestTurns.add(turn);
             }
         }
 
-        Random r = new Random();
         return bestTurns.get(r.nextInt(bestTurns.size()));
     }
 
@@ -141,11 +161,13 @@ public class CoolAI {
                 //TODO: Cathedral Placement
                 break;
             case Early:
+                rating += evaluateEnclosion(turn, testGame, me);
                 break;
             case Mid:
                 rating += evaluateEnclosion(turn, testGame, me);
                 break;
             case Late:
+                rating += evaluateEnclosion(turn, testGame, me);
                 rating += evaluateMovesDifference(turn, testGame, testAi);
                 break;
         }

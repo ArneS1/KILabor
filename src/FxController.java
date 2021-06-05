@@ -26,8 +26,8 @@ public class FxController {
     private Button buttonReset;
 
     //Game Logic
-    private List<Button> buildingButtons = new ArrayList<>();
-    Boolean buttonsCreated = false;
+    private List<Button> buildingButtons;
+    private Boolean isHumanTurn;
     private GameController gameController;
     private CoolAI aiOne;
     private CoolAI aiTwo;
@@ -43,6 +43,8 @@ public class FxController {
         this.gameController = gameController;
         this.aiOne = aiOne;
         this.aiTwo = aiTwo;
+        isHumanTurn = false;
+        buildingButtons = new ArrayList<>();
     }
 
     public void start(){
@@ -96,6 +98,7 @@ public class FxController {
             buttonMe.setDisable(true);
             buttonOther.setDisable(false);
         } else {
+            isHumanTurn = false;
             gameController.aiTurn(ai);
             updateUI(gameController.getGame());
             buttonMe.setDisable(true);
@@ -108,12 +111,9 @@ public class FxController {
         updateSceneTitle(game);
 
         renderBoard(game.lastTurn().getBoard().getBoardAsColorArray());
-        createBuildingButtons();
 
-
-        if (!buttonsCreated) {
+        if (!isHumanTurn) {
             createBuildingButtons();
-            buttonsCreated = true;
         }
 
         score.setText(getCurrentScore(game));
@@ -149,7 +149,11 @@ public class FxController {
         rScore += "Spieler Grün: ";
         rScore += game.score().get(Color.White);
         rScore += "\n";
-
+        if(game.getTurnsSize() > 1){
+            rScore += "Last Move: \n";
+            rScore += game.lastTurn().getAction().getBuilding().getName() +"\n";
+            rScore += "At X= " + game.lastTurn().getAction().x() + " and Y: " + game.lastTurn().getAction().y();
+        }
         return rScore;
     }
 
@@ -199,6 +203,7 @@ public class FxController {
                     for (Button butn : buildingButtons) {
                         gridPane.getChildren().remove(butn);
                     }
+                    isHumanTurn = true;
                     humanPlayerTurn(game.getCurrentPlayer(), building);
                 });
                 btn.setMinWidth(50);
@@ -225,6 +230,7 @@ public class FxController {
 
         Button rotateBtn = new Button("rotate");
         Button confirmBtn = new Button("confirm");
+        Button backBtn = new Button("chose other");
 
         xpBtn.setOnMouseClicked(mouseEvent -> {
             x[0]++;
@@ -274,7 +280,23 @@ public class FxController {
             gridPane.getChildren().remove(ynBtn);
             gridPane.getChildren().remove(rotateBtn);
             gridPane.getChildren().remove(confirmBtn);
-            buttonsCreated = false;
+            gridPane.getChildren().remove(backBtn);
+            isHumanTurn = false;
+            updateUI(gameController.getGame());
+        });
+
+        backBtn.setOnMouseClicked(mouseEvent -> {
+            gridPane.getChildren().remove(xpBtn);
+            gridPane.getChildren().remove(xText);
+            gridPane.getChildren().remove(xnBtn);
+            gridPane.getChildren().remove(ypBtn);
+            gridPane.getChildren().remove(yText);
+            gridPane.getChildren().remove(ynBtn);
+            gridPane.getChildren().remove(rotateBtn);
+            gridPane.getChildren().remove(confirmBtn);
+            gridPane.getChildren().remove(backBtn);
+            isHumanTurn = false;
+            updateUI(gameController.getGame());
         });
 
         gridPane.add(xpBtn, 15, 1);
@@ -287,6 +309,7 @@ public class FxController {
 
         gridPane.add(rotateBtn, 13, 5);
         gridPane.add(confirmBtn, 13, 7);
+        gridPane.add(backBtn, 13, 9);
     }
 
     private void testPlace(Placement placement) {
