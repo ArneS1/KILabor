@@ -66,11 +66,11 @@ public class FxController {
         button_aiTwo.setDisable(true);
 
         button_aiOne.setOnMouseClicked(mouseEvent -> {
-            aiButtonOnClick(aiOne, button_aiOne, button_aiTwo);
+            aiButtonOnClick(aiOne, button_aiOne);
         });
 
         button_aiTwo.setOnMouseClicked(mouseEvent -> {
-            aiButtonOnClick(aiTwo, button_aiTwo, button_aiOne);
+            aiButtonOnClick(aiTwo, button_aiTwo);
         });
 
         gridPane.add(button_aiOne, 0, 1);
@@ -94,17 +94,15 @@ public class FxController {
         stage.show();
     }
 
-    private void aiButtonOnClick(CoolAI ai, Button buttonMe, Button buttonOther) {
+    private void aiButtonOnClick(CoolAI ai, Button buttonMe) {
         if (ai.isDone) {
             buttonMe.setText("Done");
-            buttonMe.setDisable(true);
-            buttonOther.setDisable(false);
+            switchAIButtons();
         } else {
             isHumanTurn = false;
             gameController.aiTurn(ai);
             updateUI(gameController.getGame());
-            buttonMe.setDisable(true);
-            buttonOther.setDisable(false);
+            switchAIButtons();
         }
     }
 
@@ -285,6 +283,7 @@ public class FxController {
             gridPane.getChildren().remove(confirmBtn);
             gridPane.getChildren().remove(backBtn);
             isHumanTurn = false;
+            switchAIButtons();
             updateUI(gameController.getGame());
         });
 
@@ -313,6 +312,16 @@ public class FxController {
         gridPane.add(rotateBtn, 13, 5);
         gridPane.add(confirmBtn, 13, 7);
         gridPane.add(backBtn, 13, 9);
+    }
+
+    private void switchAIButtons(){
+        if(button_aiOne.isDisabled()){
+            button_aiOne.setDisable(false);
+            button_aiTwo.setDisable(true);
+        } else {
+            button_aiOne.setDisable(true);
+            button_aiTwo.setDisable(false);
+        }
     }
 
     private void testPlace(Placement placement) {
