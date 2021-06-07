@@ -24,6 +24,7 @@ public class FxController {
     private Button button_aiOne;
     private Button button_aiTwo;
     private Button buttonReset;
+    private Button buttonUndoLastTurn;
 
     //Game Logic
     private List<Button> buildingButtons;
@@ -82,10 +83,23 @@ public class FxController {
             aiOne = new CoolAI();
             aiTwo = new CoolAI();
             button_aiOne.setText("AI GREEN");
+            button_aiOne.setDisable(false);
             button_aiTwo.setText("AI BLACK");
+            button_aiTwo.setDisable(true);
+            updateSceneTitle(gameController.getGame());
             updateUI(gameController.getGame());
         });
         gridPane.add(buttonReset, 0, 15);
+
+        buttonUndoLastTurn = new Button("UNDO");
+        buttonUndoLastTurn.setOnMouseClicked(mouseEvent -> {
+            if(gameController.getGame().getTurnsSize() > 0){
+                gameController.getGame().undoLastTurn();
+                switchAIButtons();
+                updateUI(gameController.getGame());
+            }
+        });
+        gridPane.add(buttonUndoLastTurn, 0, 2);
 
         updateUI(gameController.getGame());
 
@@ -153,7 +167,13 @@ public class FxController {
             rScore += "Last Move: \n";
             rScore += game.lastTurn().getAction().getBuilding().getName() +"\n";
             rScore += "At X = " + game.lastTurn().getAction().x() + " and Y = " + game.lastTurn().getAction().y() +"\n";
-            rScore += "rated: " + aiOne.rateLastTurn(game);
+            if(!isHumanTurn){
+                try{
+                    rScore += "rated: " + aiOne.rateLastTurn(game);
+                } catch (Exception e){
+                    System.out.println("could not rate last Move because: \n" + e);
+                }
+            }
         }
         return rScore;
     }
@@ -285,6 +305,7 @@ public class FxController {
             isHumanTurn = false;
             switchAIButtons();
             updateUI(gameController.getGame());
+            System.out.println("Züge: " + gameController.getGame().getTurnsSize());
         });
 
         backBtn.setOnMouseClicked(mouseEvent -> {

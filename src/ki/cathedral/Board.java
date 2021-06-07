@@ -140,6 +140,8 @@ public class Board {
 
   private void removePlacement(Placement placement) {
     placedBuildings.remove(placement);
+    //TODO: evtl rausnehmen, gibt gecapturtes building zurück
+    //freeBuildings.put(placement.getBuilding(), freeBuildings.get(placement.getBuilding()) +1);
     placeColor(placement.getForm(), Color.None, placement.x(), placement.y());
   }
 

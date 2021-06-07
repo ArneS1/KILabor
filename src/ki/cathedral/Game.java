@@ -10,29 +10,29 @@ public class Game {
   public Game() {
     Map<Building, Integer> initalBuildings = new HashMap<>();
 
-    initalBuildings.put(new Building(1, "Tavern", Color.Black, Turnable.No, new int[][] {{0, 0}}), 2);
-    initalBuildings.put(new Building(2, "Stable", Color.Black, Turnable.Half, new int[][] {{0,0},{1,0}}), 2);
-    initalBuildings.put(new Building(3, "Inn", Color.Black, Turnable.Full, new int[][] {{0,0},{1,0},{1,1}}), 2);
-    initalBuildings.put(new Building(4, "Bridge", Color.Black, Turnable.Half, new int[][] {{0,0},{0,1},{0,2}}), 1);
-    initalBuildings.put(new Building(5, "Manor", Color.Black, Turnable.Full, new int[][] {{-1,0},{0,0},{1,0},{0,1}}), 1);
-    initalBuildings.put(new Building(6, "Square", Color.Black, Turnable.No, new int[][] {{0,0},{0,1},{1,0},{1,1}}), 1);
-    initalBuildings.put(new Building(7, "Abbey", Color.Black, Turnable.Half, new int[][] {{-1,0},{0,0},{0,1},{1,1}}), 1);
-    initalBuildings.put(new Building(8, "Infirmary", Color.Black, Turnable.No, new int[][] {{-1,0},{0,-1},{0,0},{0,1},{1,0}}), 1);
-    initalBuildings.put(new Building(9, "Castle", Color.Black, Turnable.Full, new int[][] {{-1,0},{-1,1},{0,0},{1,0},{1,1}}), 1);
-    initalBuildings.put(new Building(10, "Tower", Color.Black, Turnable.Full, new int[][] {{-1,-1},{0,-1},{0,0},{1,0},{1,1}}), 1);
-    initalBuildings.put(new Building(11, "Academy", Color.Black, Turnable.Full, new int[][] {{-1,0},{0,-1},{0,0},{0,1},{1,-1}}), 1);
+    initalBuildings.put(new Building(1, "Tavern", Color.White, Turnable.No, new int[][] {{0, 0}}), 2);
+    initalBuildings.put(new Building(2, "Stable", Color.White, Turnable.Half, new int[][] {{0,0},{1,0}}), 2);
+    initalBuildings.put(new Building(3, "Inn", Color.White, Turnable.Full, new int[][] {{0,0},{1,0},{1,1}}), 2);
+    initalBuildings.put(new Building(4, "Bridge", Color.White, Turnable.Half, new int[][] {{0,0},{0,1},{0,2}}), 1);
+    initalBuildings.put(new Building(5, "Manor", Color.White, Turnable.Full, new int[][] {{-1,0},{0,0},{1,0},{0,1}}), 1);
+    initalBuildings.put(new Building(6, "Square", Color.White, Turnable.No, new int[][] {{0,0},{0,1},{1,0},{1,1}}), 1);
+    initalBuildings.put(new Building(7, "Abbey", Color.White, Turnable.Half, new int[][] {{-1,0},{0,0},{0,1},{1,1}}), 1);
+    initalBuildings.put(new Building(8, "Infirmary", Color.White, Turnable.No, new int[][] {{-1,0},{0,-1},{0,0},{0,1},{1,0}}), 1);
+    initalBuildings.put(new Building(9, "Castle", Color.White, Turnable.Full, new int[][] {{-1,0},{-1,1},{0,0},{1,0},{1,1}}), 1);
+    initalBuildings.put(new Building(10, "Tower", Color.White, Turnable.Full, new int[][] {{-1,-1},{0,-1},{0,0},{1,0},{1,1}}), 1);
+    initalBuildings.put(new Building(11, "Academy", Color.White, Turnable.Full, new int[][] {{-1,0},{0,-1},{0,0},{0,1},{1,-1}}), 1);
 
-    initalBuildings.put(new Building(12, "Tavern", Color.White, Turnable.No, new int[][] {{0,0}}), 2);
-    initalBuildings.put(new Building(13, "Stable", Color.White, Turnable.Half, new int[][] {{0,0},{1,0}}), 2);
-    initalBuildings.put(new Building(14, "Inn", Color.White, Turnable.Full, new int[][] {{0,0},{1,0},{1,1}}), 2);
-    initalBuildings.put(new Building(15, "Bridge", Color.White, Turnable.Half, new int[][] {{0,0},{0,1},{0,2}}), 1);
-    initalBuildings.put(new Building(16, "Manor", Color.White, Turnable.Full, new int[][] {{-1,0},{0,0},{1,0},{0,1}}), 1);
-    initalBuildings.put(new Building(17, "Square", Color.White, Turnable.No, new int[][] {{0,0},{0,1},{1,0},{1,1}}), 1);
-    initalBuildings.put(new Building(18, "Abbey", Color.White, Turnable.Half, new int[][] {{-1,1},{0,0},{0,1},{1,0}}), 1);
-    initalBuildings.put(new Building(19, "Infirmary", Color.White, Turnable.No, new int[][] {{-1,0},{0,-1},{0,0},{0,1},{1,0}}), 1);
-    initalBuildings.put(new Building(20, "Castle", Color.White, Turnable.Full, new int[][] {{-1,0},{-1,1},{0,0},{1,0},{1,1}}), 1);
-    initalBuildings.put(new Building(21, "Tower", Color.White, Turnable.Full, new int[][] {{-1,-1},{0,-1},{0,0},{1,0},{1,1}}), 1);
-    initalBuildings.put(new Building(22, "Academy", Color.White, Turnable.Full, new int[][] {{-1,-1},{0,-1},{0,0},{0,1},{1,0}}), 1);
+    initalBuildings.put(new Building(12, "Tavern", Color.Black, Turnable.No, new int[][] {{0,0}}), 2);
+    initalBuildings.put(new Building(13, "Stable", Color.Black, Turnable.Half, new int[][] {{0,0},{1,0}}), 2);
+    initalBuildings.put(new Building(14, "Inn", Color.Black, Turnable.Full, new int[][] {{0,0},{1,0},{1,1}}), 2);
+    initalBuildings.put(new Building(15, "Bridge", Color.Black, Turnable.Half, new int[][] {{0,0},{0,1},{0,2}}), 1);
+    initalBuildings.put(new Building(16, "Manor", Color.Black, Turnable.Full, new int[][] {{-1,0},{0,0},{1,0},{0,1}}), 1);
+    initalBuildings.put(new Building(17, "Square", Color.Black, Turnable.No, new int[][] {{0,0},{0,1},{1,0},{1,1}}), 1);
+    initalBuildings.put(new Building(18, "Abbey", Color.Black, Turnable.Half, new int[][] {{-1,1},{0,0},{0,1},{1,0}}), 1);
+    initalBuildings.put(new Building(19, "Infirmary", Color.Black, Turnable.No, new int[][] {{-1,0},{0,-1},{0,0},{0,1},{1,0}}), 1);
+    initalBuildings.put(new Building(20, "Castle", Color.Black, Turnable.Full, new int[][] {{-1,0},{-1,1},{0,0},{1,0},{1,1}}), 1);
+    initalBuildings.put(new Building(21, "Tower", Color.Black, Turnable.Full, new int[][] {{-1,-1},{0,-1},{0,0},{1,0},{1,1}}), 1);
+    initalBuildings.put(new Building(22, "Academy", Color.Black, Turnable.Full, new int[][] {{-1,-1},{0,-1},{0,0},{0,1},{1,0}}), 1);
 
     initalBuildings.put(new Building(23, "Cathedral", Color.Blue, Turnable.Full, new int[][] {{-1,0},{0,-1},{0,0},{0,1},{0,2},{1,0}}), 1);
 
