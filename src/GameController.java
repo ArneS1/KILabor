@@ -1,4 +1,4 @@
-import ki.CoolAI;
+import ki.Thomas;
 import ki.cathedral.Game;
 
 public class GameController {
@@ -9,7 +9,7 @@ public class GameController {
         game = new Game();
     }
 
-    public void aiTurn(CoolAI coolAI) {
+    public void aiTurn(Thomas coolAI) {
         try {
             if (game.takeTurn(coolAI.takeTurn(game))) {
                 System.out.println(game.lastTurn().getBoard());

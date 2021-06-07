@@ -7,7 +7,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import ki.CoolAI;
+import ki.Thomas;
 import ki.cathedral.*;
 
 import java.util.ArrayList;
@@ -30,13 +30,13 @@ public class FxController {
     private List<Button> buildingButtons;
     private Boolean isHumanTurn;
     private GameController gameController;
-    private CoolAI aiOne;
-    private CoolAI aiTwo;
+    private Thomas aiOne;
+    private Thomas aiTwo;
 
 
     FxController(
-            CoolAI aiOne,
-            CoolAI aiTwo,
+            Thomas aiOne,
+            Thomas aiTwo,
             Stage stage,
             GameController gameController
     ){
@@ -80,8 +80,8 @@ public class FxController {
         buttonReset = new Button("New Game");
         buttonReset.setOnMouseClicked(mouseEvent -> {
             gameController.resetGame();
-            aiOne = new CoolAI();
-            aiTwo = new CoolAI();
+            aiOne = new Thomas();
+            aiTwo = new Thomas();
             button_aiOne.setText("AI GREEN");
             button_aiOne.setDisable(false);
             button_aiTwo.setText("AI BLACK");
@@ -108,7 +108,7 @@ public class FxController {
         stage.show();
     }
 
-    private void aiButtonOnClick(CoolAI ai, Button buttonMe) {
+    private void aiButtonOnClick(Thomas ai, Button buttonMe) {
         if (ai.isDone) {
             buttonMe.setText("Done");
             switchAIButtons();

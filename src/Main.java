@@ -1,18 +1,17 @@
 import javafx.application.Application;
 import javafx.stage.Stage;
-import ki.CoolAI;
-import ki.cathedral.*;
+import ki.Thomas;
 
 public class Main extends Application {
-    CoolAI aiOne;
-    CoolAI aiTwo;
+    Thomas aiOne;
+    Thomas aiTwo;
     Boolean buttonsCreated = false;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        aiOne = new CoolAI();
-        aiTwo = new CoolAI();
+        aiOne = new Thomas();
+        aiTwo = new Thomas();
         GameController gameController = new GameController();
         FxController fxController = new FxController(aiOne, aiTwo, primaryStage, gameController);
         fxController.start();

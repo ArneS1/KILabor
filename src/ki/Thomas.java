@@ -3,7 +3,7 @@ import ki.cathedral.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CoolAI {
+public class Thomas {
 
     private List<Placement> possibleTurns;
     public Boolean isDone;
@@ -33,7 +33,7 @@ public class CoolAI {
     //globals
     private float enemyPossibleMovesBeforeMove;
 
-    public CoolAI() {
+    public Thomas() {
         possibleTurns = new ArrayList<>();
         isDone = false;
         aiMode = AiMode.Initial;
@@ -161,7 +161,7 @@ public class CoolAI {
             aiMode = AiMode.Late;
             timePerMoveInSeconds = timePerMoveInSecondsLate;
             EVALUATION_ScoreImproved = EVALUATION_ScoreImprovedLate;
-            CoolAI testAi = new CoolAI();
+            Thomas testAi = new Thomas();
             enemyPossibleMovesBeforeMove = testAi.getPossibleTurns(game.copy()).size();
         }
         System.out.println("AI MODE: " + aiMode.toString());
@@ -170,7 +170,7 @@ public class CoolAI {
     private double evaluateTurn(Placement turn, Game game) {
         double rating = 0;
         Game testGame = game.copy();
-        CoolAI testAi = new CoolAI();
+        Thomas testAi = new Thomas();
         Color me = Color.Black;
         Color opponent = Color.Black;
 
@@ -345,7 +345,7 @@ public class CoolAI {
         return false;
     }
 
-    private double evaluateMovesDifference(Placement turn, Game testGame, CoolAI testAi) {
+    private double evaluateMovesDifference(Placement turn, Game testGame, Thomas testAi) {
         double addToRating = 0;
         Game movesDiffGame = testGame.copy();
         System.out.println(movesDiffGame.takeTurn(turn));
