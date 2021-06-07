@@ -22,7 +22,7 @@ public class Thomas {
      */
     private double EVALUATION_MoveDifference = 3;
     private double EVALUATION_CloseToOwnPiece = 1;
-    private double EVALUATION_CloseToEnemyPiece = 2;
+    private double EVALUATION_CloseToEnemyPiece = 1;
     private double EVALUATION_CloseToWall = .3;
     private double EVALUATION_EnclosionPerField = .2;
     private double EVALUATION_EnclosionPerCapturedField = 5;
@@ -188,7 +188,7 @@ public class Thomas {
         //Evaluation Methods
         switch (aiMode) {
             case Initial:
-                //TODO: Cathedral Placement
+                //Cathedral
                 break;
             case Early:
                 rating += evaluateEnclosion(turn, testGame, me);
